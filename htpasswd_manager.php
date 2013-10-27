@@ -65,6 +65,10 @@
   <body>
     <!-- <img src="img/logo.gif" alt="logo" title="logo"/> -->
 
+    <!-- Preload images so that they are already checked by browser after a password change -->
+    <img src="img/ok.png"    style="visibility: hidden"/>
+    <img src="img/error.png" style="visibility: hidden"/>
+
     <h1>Password Manager</h1>
 
     <?php
