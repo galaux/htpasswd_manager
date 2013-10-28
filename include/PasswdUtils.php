@@ -1,7 +1,7 @@
 <?php
 
-  // TODO put the htpassword from htpasswd_manager path in conf
-  define("HTPASSWDFILE", "/etc/apache2/htpasswd_users");
+  include 'config.php';
+  define("HTPASSWDFILE", $AUTH_USER_FILE);
 
   // Loads the htpasswd file in an associative array
   // Array( username => crypted_pass, ... )
