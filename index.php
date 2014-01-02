@@ -15,7 +15,6 @@
   $password = $_POST["password"];
   $new_password = $_POST["new_password"];
   $confirm_password = $_POST["confirm_password"];
-  $error = $_POST["error"];
 
   /*
    * Checking that form has been send correctly
@@ -55,91 +54,80 @@
   }
 ?>
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8 " />
-    <title>Password Manager</title>
-    <link rel="stylesheet" href="style.css" type="text/css">
+    <title>Password manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
   </head>
   <body>
-    <!-- <img src="img/logo.gif" alt="logo" title="logo"/> -->
 
-    <!-- Preload images so that they are already checked by browser after a password change -->
-    <img src="img/ok.png"    style="visibility: hidden"/>
-    <img src="img/error.png" style="visibility: hidden"/>
+    <div style="float:none; margin: 10% 33%">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title">Password manager</h3>
+        </div>
+        <div class="panel-body">
+          <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" id="form" class="form-horizontal" role="form">
+            <div class="form-group">
+              <label for="username" class="col-sm-2 control-label">Username</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="username" name="username" placeholder="Username">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="password" class="col-sm-2 control-label">Current</label>
+              <div class="col-sm-10">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Current password">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="new_password" class="col-sm-2 control-label">New</label>
+              <div class="col-sm-10">
+                <input type="password" class="form-control" id="new_password" name="new_password" placeholder="New password">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="confirm_password" class="col-sm-2 control-label">Confirm</label>
+              <div class="col-sm-10">
+                <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm new password">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-default">Change</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
 
-    <h1>Password Manager</h1>
+      <?php
+        if (isset($error)) {
+          switch ($error) {
+            case 0: $level = "success"; $mess = "New password successfully set"; break;
+            case 2: $level = "warning"; $mess = "All fields of the form must be filled"; break;
+            case 3: $level = "warning"; $mess = "Typed passwords don't match"; break;
+            case 4: $level = "warning"; $mess = "Wrong username and passwords"; break;
+            case 5: $level = "danger";  $mess = "An error occurred while saving the new password. Please contact support"; break;
+          }
+          echo "<div class='alert alert-$level'>$mess</div>";
+        }
+      ?>
+      </div>
 
-    <?php
-
-      if(isset($error) && $error == 0) {
-        $PASSWORD_CHANGE_OK = "<img class=\"emblem\" src=\"img/ok.png\"><b>New password has been set successfully";
-        echo "<div>".$PASSWORD_CHANGE_OK."</div>";
-      }
-
-      if(isset($error) && $error == 2) {
-        $FORM_NOT_COMPLETE_ERROR = "<img class=\"emblem\" src=\"img/error.png\"><b>Error!</b> All fields in the form must be filled.";
-        echo "<div>".$FORM_NOT_COMPLETE_ERROR."</div>";
-      }
-
-      if(isset($error) && $error == 3) {
-        $PASSWORD_MATCH_ERROR = "<img class=\"emblem\" src=\"img/error.png\"><b>Error!</b> Typed passwords don't match!";
-        echo "<div>".$PASSWORD_MATCH_ERROR."</div>";
-      }
-
-      if(isset($error) && $error == 4) {
-        $WRONG_USER_PASSWORD_ERROR = "<img class=\"emblem\" src=\"img/error.png\"><b>Error!</b> Wrong username and passwords!";
-        echo "<div>".$WRONG_USER_PASSWORD_ERROR."</div>";
-      }
-
-      if(isset($error) && $error == 5) {
-        $FILE_WRITING_ERROR = "<img class=\"emblem\" src=\"img/error.png\">An error occurred while saving the new password.<br>Please contact support.";
-        echo "<div>".$FILE_WRITING_ERROR."</div>";
-      }
-
-    ?>
-
-    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" id="form">
-      <table width="400" border="0">
-        <tr>
-          <td>
-            <label>Username:</label>
-          </td>
-          <td>
-            <input type="text" id="username" name="username">
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <label>Password:</label>
-          </td>
-          <td>
-            <input type="password" id="password" name="password">
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <label>New password:</label>
-          </td>
-          <td>
-            <input type="password" id="new_password" name="new_password">
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <label>Confirm new password:</label>
-          </td>
-          <td>
-            <input type="password" id="confirm_password" name="confirm_password">
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2">
-            <input type="submit" id="submit" value="Change Password">
-          </td>
-        </tr>
-      </table>
-    </form>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
   </body>
 </html>
