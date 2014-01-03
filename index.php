@@ -2,14 +2,12 @@
 
   include 'include/PasswdUtils.php';
 
-  /*
-   * ERROR CODES
-   * 1: Form not sent correctly.
-   * 2: At least one field on the form is empty.
-   * 3: Passwords don't match.
-   * 4: Wrong username and password.
-   * 5: Error while saving new password on file.
-   * */
+  define("R_OK",                 0);
+  define("R_FORM_NOT_OK",        1);
+  define("R_EMPTY_FIELD",        2);
+  define("R_PASSWORDS_MISMATCH", 3);
+  define("R_WRONG_CRED",         4);
+  define("R_WHILE_SAVING",       5);
 
   $username = $_POST["username"];
   $password = $_POST["password"];
@@ -27,29 +25,29 @@
     if( $username != "" && $password != "" && $new_password != "" && $confirm_password != "") {
       if(strcmp($new_password, $confirm_password) != 0) {
         // Typed passwords don't match
-        $error = 3;
+        $result = R_PASSWORDS_MISMATCH;
 
       } else {
         $passwdFileAsArray = loadHtpasswd();
         if (!testHtpasswd($passwdFileAsArray, $username, $password)) {
           // Wrong username and passwords.
-          $error = 4;
+          $result = R_WRONG_CRED;
 
         } else {
           // User already exists in htpasswd file
           //$passwdFileAsArray[$username] = nonSaltedSha1($new_password);
           $passwdFileAsArray[$username] = cryptPasswd($new_password);
           if (!saveHtpasswd($passwdFileAsArray)) {
-            $error = 5;
+            $result = R_WHILE_SAVING;
 
           } else {
-            $error = 0;
+            $result = R_OK;
           }
         }
       }
     } else {
       // At least one field in the form is empty.
-      $error = 2;
+      $result = R_EMPTY_FIELD;
     }
   }
 ?>
@@ -112,13 +110,13 @@
       </div>
 
       <?php
-        if (isset($error)) {
-          switch ($error) {
-            case 0: $level = "success"; $mess = "New password successfully set"; break;
-            case 2: $level = "warning"; $mess = "All fields of the form must be filled"; break;
-            case 3: $level = "warning"; $mess = "Typed passwords don't match"; break;
-            case 4: $level = "warning"; $mess = "Wrong username and passwords"; break;
-            case 5: $level = "danger";  $mess = "An error occurred while saving the new password. Please contact support"; break;
+        if (isset($result)) {
+          switch ($result) {
+            case R_OK                : $level = "success"; $mess = "New password successfully set"; break;
+            case R_EMPTY_FIELD       : $level = "warning"; $mess = "All fields of the form must be filled"; break;
+            case R_PASSWORDS_MISMATCH: $level = "warning"; $mess = "Typed passwords don't match"; break;
+            case R_WRONG_CRED        : $level = "warning"; $mess = "Wrong username and passwords"; break;
+            case R_WHILE_SAVING      : $level = "danger";  $mess = "An error occurred while saving the new password. Please contact support"; break;
           }
           echo "<div class='alert alert-$level'>$mess</div>";
         }
