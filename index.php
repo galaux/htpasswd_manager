@@ -8,6 +8,7 @@
   define("R_PASSWORDS_MISMATCH", 3);
   define("R_WRONG_CRED",         4);
   define("R_WHILE_SAVING",       5);
+  define("R_NEW_PWD_WEAK",       6);
 
   $username = $_POST["username"];
   $password = $_POST["password"];
@@ -34,14 +35,18 @@
           $result = R_WRONG_CRED;
 
         } else {
-          // User already exists in htpasswd file
-          //$passwdFileAsArray[$username] = nonSaltedSha1($new_password);
-          $passwdFileAsArray[$username] = cryptPasswd($new_password);
-          if (!saveHtpasswd($passwdFileAsArray)) {
-            $result = R_WHILE_SAVING;
+          if (preg_match("#.*^(?=.{8,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*$#", $new_password)){
+            // User already exists in htpasswd file
+            //$passwdFileAsArray[$username] = nonSaltedSha1($new_password);
+            $passwdFileAsArray[$username] = cryptPasswd($new_password);
+            if (!saveHtpasswd($passwdFileAsArray)) {
+              $result = R_WHILE_SAVING;
 
+            } else {
+              $result = R_OK;
+            }
           } else {
-            $result = R_OK;
+            $result = R_NEW_PWD_WEAK;
           }
         }
       }
@@ -117,6 +122,7 @@
             case R_PASSWORDS_MISMATCH: $level = "warning"; $mess = "Typed passwords don't match"; break;
             case R_WRONG_CRED        : $level = "warning"; $mess = "Wrong username and passwords"; break;
             case R_WHILE_SAVING      : $level = "danger";  $mess = "An error occurred while saving the new password. Please contact support"; break;
+            case R_NEW_PWD_WEAK      : $level = "warning"; $mess = "New password must be between 8 and 20 chars and contain at least one lower char, one upper char and a digit"; break;
           }
           echo "<div class='alert alert-$level'>$mess</div>";
         }
